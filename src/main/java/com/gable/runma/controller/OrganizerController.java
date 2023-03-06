@@ -24,7 +24,8 @@ public class OrganizerController {
 	public Organizer newOrganizer(@RequestBody Organizer org) {
 		return service.newOrganizer(org);
 	}
-	
+
+
 	@PutMapping("/{id}")
 	public Organizer updateOrganizer(@RequestBody Organizer org) {
 		return service.updateOrganizer(org);

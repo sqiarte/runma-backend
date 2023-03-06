@@ -3,17 +3,14 @@ package com.gable.runma.service;
 import com.gable.runma.exception.DataIntegrityViolationException;
 import com.gable.runma.exception.ResourceNotFoundException;
 import com.gable.runma.model.Event;
-import com.gable.runma.model.RaceType;
+import com.gable.runma.model.Ticket;
 import com.gable.runma.model.User;
-import org.hibernate.NonUniqueResultException;
+import com.gable.runma.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.gable.runma.repository.UserRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
@@ -21,13 +18,12 @@ import java.util.Optional;
 public class UserService {
 	@Autowired
 	private UserRepository repo;
+	@Autowired
+	private TicketRepository ticketRepo;
+
 
 	//get User by Id
 	public User getUser(Integer id) {
-//		Optional<User> op = repo.findById(id);
-//		User result = op.orElseThrow();
-//		return result;
-
 		User user = repo.findById(id)
 				.orElseThrow(()-> new ResourceNotFoundException("User with id: " + id + " does not exist"));
 		return ResponseEntity.ok(user).getBody();
@@ -39,39 +35,82 @@ public class UserService {
 		return user;
 	}
 
-	//Update user
+
+//	//อันนี้ใช้ได้
 //	public User updateUser(User data) {
-//		User user = repo.findById(data.getId()).orElseThrow(()-> new ResourceNotFoundException("User with id: " + data.getId() + " does not exist"));
-//		if (user != null) {
-//			ResponseEntity.ok(user).getBody();
-//			return repo.save(data);
-//		} else {
-//			throw new ResourceNotFoundException("The email address " + user.getEmail() + " is already taken.");
+//		User user = repo.findById(data.getId()).orElseThrow(() -> new ResourceNotFoundException("User with id: " + data.getId() + " does not exist"));
+//
+//		// Check if the email already exists in the database
+//		User existingUser = repo.findByEmail(data.getEmail());
+//		if (existingUser != null && !existingUser.getId().equals(user.getId())) {
+//			throw new DataIntegrityViolationException("The email address " + data.getEmail() + " is already taken.");
 //		}
-////		return ResponseEntity.ok(user).getBody();
+//
+////		if (data != null) {
+////			if (user.getTicket() != null) {
+////				for (Ticket ticket : data.getTicket()) {
+////					Ticket objTicket = ticketRepo.findById(ticket.getId()).orElseThrow(() -> new ResourceNotFoundException("Ticket with id: " + ticket.getId() + " does not exist"));
+////					objTicket.setUserID(user);
+////					user.getTicket().add(objTicket);
+////					ticketRepo.save(objTicket);
+////					System.out.println("noooooooooooooooooooooooooooooo");
+////				}
+////			}
+////		}
+//		System.out.println("yayyyyyyyyyyyyyyy");
+//		repo.save(data);
+//		return user;
 //	}
 
-	// update user data
-	public User updateUser(User data) {
-		User user = repo.findById(data.getId()).orElseThrow(() -> new ResourceNotFoundException("User with id: " + data.getId() + " does not exist"));
+	public User updateUser(User newValue) {
+		Optional <User> old = repo.findById(newValue.getId());
 
-		// Check if the email already exists in the database
-		User existingUser = repo.findByEmail(data.getEmail());
-		if (existingUser != null && !existingUser.getId().equals(user.getId())) {
-			throw new DataIntegrityViolationException("The email address " + data.getEmail() + " is already taken.");
+		if (old.isPresent()) {
+			User theOld = old.get();
+
+			// Check if the email already exists in the database
+			User existingUser = repo.findByEmail(newValue.getEmail());
+			if (existingUser != null && !existingUser.getId().equals(newValue.getId())) {
+				throw new DataIntegrityViolationException("The email address " + newValue.getEmail() + " is already taken.");
+			} else {
+				theOld.setAddress(newValue.getAddress());
+				theOld.setBirthDate(newValue.getBirthDate());
+				theOld.setCountry(newValue.getCountry());
+				theOld.setDistrict(newValue.getDistrict());
+				theOld.setEmail(newValue.getEmail());
+				theOld.setFName(newValue.getFName());
+				theOld.setGender(newValue.getGender());
+				theOld.setLName(newValue.getLName());
+				theOld.setPhone(newValue.getPhone());
+				theOld.setPostalCode(newValue.getPostalCode());
+				theOld.setProvince(newValue.getProvince());
+				theOld.setSubDistrict(newValue.getSubDistrict());
+				theOld.setPassword(newValue.getPassword());
+
+				theOld.getTicket().clear();
+
+				if (newValue != null) {
+					theOld.getTicket().clear();
+					if (newValue.getTicket() != null) {
+						for (Ticket ticket : newValue.getTicket()) {
+							Ticket objTicket = ticketRepo.findById(ticket.getId()).orElseThrow();
+							theOld.getTicket().add(objTicket);
+							if (!objTicket.getUserID().equals(theOld)) {
+								objTicket.setUserID(theOld);
+								ticketRepo.save(objTicket);
+							}
+						}
+					}
+				}
+
+				return repo.save(theOld);
+			}
+		} else {
+			throw new ResourceNotFoundException("Not found this user");
 		}
-		ResponseEntity.ok(user).getBody();
-		return repo.save(data);
 	}
 
 
 
-
-//	@GetMapping("{id}")
-//	public ResponseEntity<Employee> getUserById(@PathVariable long id) {
-//		User user = userRepository.findById(id)
-////                .orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id: " + id));
-//		return ResponseEntity.ok(employee);
-//	}
 
 }

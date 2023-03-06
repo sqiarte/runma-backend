@@ -1,13 +1,7 @@
 package com.gable.runma.model;
 import java.util.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import lombok.Data;
 
@@ -16,6 +10,7 @@ import lombok.Data;
  */
 @Data
 @Entity
+//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Ticket {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

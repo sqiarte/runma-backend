@@ -3,6 +3,8 @@ package com.gable.runma.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.gable.runma.model.Organizer;
+import com.gable.runma.repository.OrganizerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,26 +20,45 @@ public class EventService {
 	private EventRepository repo;
 	@Autowired
 	private RaceTypeRepository rtRepo;
+	@Autowired
+	private OrganizerRepository organizerRepository;
 
 	public List<Event> findAll() {
 		return repo.findAll();
 	}
 
-	public Event newEvent(Event event) {
-		Event e = repo.save(event);
-		if (event.getRaceTypeList() != null) {
-			for (RaceType rt : event.getRaceTypeList()) {
-				rt.setEvent(e);
-				rtRepo.save(rt);
+	// post event
 
-			}
-		}
-		if (event.getOrganizerList() != null) {
-			
-		}
+//	public void save(Event theEvent, Integer ogId) {
+//		Optional<Organizer> byId = organizerRepository.findById(ogId);
+//
+//		if (byId.isPresent()) {
+//			Organizer organizer = byId.get();
+//			List<Event> eventList = organizer.getEventList();
+//
+//			eventList.add(theEvent);
+//			organizer.setEventList(eventList);
+//
+//			organizerRepository.save(organizer);
+//		} else {
+//			throw new RuntimeException("Organizer with id " + ogId + " not found.");
+//		}
 
-		return repo.save(event);
+public Event newEvent(Event event) {
+	Event e = repo.save(event);
+	if (event.getRaceTypeList() != null) {
+		for (RaceType rt : event.getRaceTypeList()) {
+			rt.setEvent(e);
+			rtRepo.save(rt);
+
+		}
 	}
+	if (event.getOrganizerList() != null) {
+
+	}
+
+	return repo.save(event);
+}
 
 	public Event update(Event data) {
 		Event event = repo.findById(data.getId()).orElseThrow();

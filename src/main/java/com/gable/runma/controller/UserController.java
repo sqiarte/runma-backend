@@ -26,4 +26,5 @@ public class UserController {
     User update(@RequestBody User user, @PathVariable Integer id) {
         return service.updateUser(user);
     }
+
 }
