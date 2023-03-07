@@ -6,6 +6,10 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 
@@ -13,6 +17,9 @@ import lombok.Data;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "users")
+@JsonIdentityInfo(scope = User.class,
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +44,6 @@ public class User {
 	private String district;
 	private int postalCode;
     
-	@OneToMany
+	@OneToMany (mappedBy = "userID" ,fetch = FetchType.LAZY ,cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Ticket> ticket;
 }

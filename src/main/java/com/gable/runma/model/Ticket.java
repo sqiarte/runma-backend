@@ -3,6 +3,10 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 /**
@@ -10,6 +14,9 @@ import lombok.Data;
  */
 @Data
 @Entity
+@JsonIdentityInfo(scope = Ticket.class,
+generator = ObjectIdGenerators.PropertyGenerator.class,
+property = "id")
 //@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Ticket {
 	@Id
@@ -25,11 +32,9 @@ public class Ticket {
     private String imageProof;
     
     @ManyToOne
+    @JoinColumn(name = "userTicketId")
     private User userID;
 
     @ManyToOne
     private RaceType raceType;
-    
-    
-
 }

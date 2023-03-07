@@ -27,6 +27,10 @@ public class OrganizerService {
 
 	//Create organizer
 	public Organizer newOrganizer(Organizer org) {
+		Organizer existingOrganizer = repo.findByEmail(org.getEmail());
+		if (existingOrganizer != null && !existingOrganizer.getId().equals(org.getId())) {
+			throw new DataIntegrityViolationException("The email address " + org.getEmail() + " is already taken.");
+		}
 		return repo.save(org);
 	}
 

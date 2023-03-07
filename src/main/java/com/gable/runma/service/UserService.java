@@ -26,7 +26,8 @@ public class UserService {
 	public User getUser(Integer id) {
 		User user = repo.findById(id)
 				.orElseThrow(()-> new ResourceNotFoundException("User with id: " + id + " does not exist"));
-		return ResponseEntity.ok(user).getBody();
+		//return ResponseEntity.ok(user).getBody();
+		return user;
 	}
 
 	//crete new user
@@ -102,7 +103,6 @@ public class UserService {
 						}
 					}
 				}
-
 				return repo.save(theOld);
 			}
 		} else {
